@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const { MongoClient } = require("mongodb");
-const languageController = require("./controllers/languageController");
+const controleriai = require("./controllers/controleriai.js");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,21 +9,22 @@ const uri = process.env.MONGO_URI;
 
 app.use(express.json());
 
-let db;
-
 async function connectDB() {
   const client = new MongoClient(uri);
   await client.connect();
-  db = client.db();
+  const db = client.db("testDB");
   console.log("Connected to MongoDB");
+
+  // Paduodam db į controller failą
+  controleriai.setDb(db);
 }
 
 connectDB();
 
-app.post("/languages", controleriai.createLanguage);
-app.get("/languages", controleriai.getLanguages);
-app.put("/languages/:name", controleriai.updateLanguage);
-app.delete("/languages/:name", controleriai.deleteLanguage);
+app.post("/users", controleriai.createUser);
+app.get("/users", controleriai.getUsers);
+app.put("/users/:name", controleriai.updateUser);
+app.delete("/users/:id", controleriai.deleteUser);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
