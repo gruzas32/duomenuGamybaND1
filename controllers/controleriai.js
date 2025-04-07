@@ -1,7 +1,8 @@
-const { MongoClient } = require("mongodb");
+let db; // pradžioje be ryšio
 
-// Connect to MongoDB
-const db = MongoClient.db();
+function setDb(database) {
+  db = database;
+}
 
 async function createUser(req, res) {
   try {
@@ -24,7 +25,7 @@ async function getUsers(req, res) {
 async function updateUser(req, res) {
   try {
     const result = await db.collection("users").updateOne(
-      { username: req.params.username },
+      { _id: new require("mongodb").ObjectId(req.params.id) },
       { $set: req.body }
     );
     res.status(200).send(result);
@@ -35,7 +36,7 @@ async function updateUser(req, res) {
 
 async function deleteUser(req, res) {
   try {
-    const result = await db.collection("users").deleteOne({ username: req.params.username });
+    const result = await db.collection("users").deleteOne({ _id: new require("mongodb").ObjectId(req.params.id) });
     res.status(200).send(result);
   } catch (err) {
     res.status(500).send({ message: "Error deleting user", error: err });
@@ -43,6 +44,7 @@ async function deleteUser(req, res) {
 }
 
 module.exports = {
+  setDb,
   createUser,
   getUsers,
   updateUser,
